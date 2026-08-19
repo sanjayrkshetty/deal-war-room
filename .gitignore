@@ -1,0 +1,35 @@
+# Environment & Secrets
+.env
+*.env
+*.pem
+*.key
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Raw Proposal Files & Sensitivity Guardrail
+corpus/raw/
+*.docx
+*.pdf
+*.xlsx
+*.csv
+!corpus/synthetic_samples/*.json
+
+# Local Database & SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Virtual Environments
+env/
+venv/
+.venv/

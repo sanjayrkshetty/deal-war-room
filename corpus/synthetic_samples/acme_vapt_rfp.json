@@ -1,0 +1,6 @@
+{
+  "opportunity_name": "Acme Corp Web & API Security Vulnerability Assessment & Penetration Test",
+  "client_name": "Acme Corporation",
+  "industry": "FinTech & Payment Solutions",
+  "rfp_text": "Acme Corporation requires a comprehensive Vulnerability Assessment and Penetration Test (VAPT) across our customer-facing web portal and microservice REST APIs. Scope includes OWASP Top 10 vulnerabilities, authentication bypass testing, business logic flaw review, and external infrastructure scanning. Testing must be completed within a 3-week window with formal re-testing included."
+}

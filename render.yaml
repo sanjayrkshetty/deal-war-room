@@ -25,4 +25,4 @@ services:
       - key: DWR_MAX_ANALYSES_PER_HOUR
         value: "15"
       - key: DWR_CORS_ORIGINS
-        value: "http://localhost:3000,https://deal-war-room.vercel.app"
+        value: "http://localhost:3000,https://deal-war-room-sandy.vercel.app"

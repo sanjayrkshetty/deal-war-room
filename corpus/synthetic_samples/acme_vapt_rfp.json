@@ -1,6 +1,46 @@
 {
-  "opportunity_name": "Acme Corp Web & API Security Vulnerability Assessment & Penetration Test",
-  "client_name": "Acme Corporation",
-  "industry": "FinTech & Payment Solutions",
-  "rfp_text": "Acme Corporation requires a comprehensive Vulnerability Assessment and Penetration Test (VAPT) across our customer-facing web portal and microservice REST APIs. Scope includes OWASP Top 10 vulnerabilities, authentication bypass testing, business logic flaw review, and external infrastructure scanning. Testing must be completed within a 3-week window with formal re-testing included."
+  "fixture_id": "acme_vapt_rfp_v2",
+  "title": "Acme Corp Web & API VAPT Program",
+  "source_type": "synthetic",
+  "agency": "Acme Corp Security Office",
+  "expected_mode": "heading",
+  "expected_refs": ["1", "2", "2.1", "2.2", "3", "4", "5"],
+  "engineered_traps": ["unlimited_support_language", "vague_acceptance_criteria"],
+  "sections": [
+    {
+      "ref": "1",
+      "heading": "Program Background",
+      "body": "Acme Corporation operates three customer-facing web portals and a partner API gateway.\nAll portals handle cardholder data during checkout and must remain PCI compliant."
+    },
+    {
+      "ref": "2",
+      "heading": "Scope of Testing",
+      "body": "The vendor shall test all web applications and APIs listed in Annex A.\nAnnex A will be shared after contract signature and may be updated by the business at any time without change of fee."
+    },
+    {
+      "ref": "2.1",
+      "heading": "Web Application Testing Requirements",
+      "body": "Testing shall follow OWASP Top 10 and PTES methodology.\nThe vendor shall re-test findings until all issues are closed, for as long as the client requires, at no additional cost."
+    },
+    {
+      "ref": "2.2",
+      "heading": "API Testing Requirements",
+      "body": "The partner API gateway shall be tested for authentication flaws, broken object level authorization and rate limiting gaps."
+    },
+    {
+      "ref": "3",
+      "heading": "Acceptance Criteria",
+      "body": "Deliverables will be reviewed by the client security team and accepted when the client considers the work satisfactory.\nNo quantitative acceptance thresholds are defined in this tender."
+    },
+    {
+      "ref": "4",
+      "heading": "Timeline",
+      "body": "Testing windows must complete within 30 calendar days of purchase order issuance.\nRe-tests must commence within 48 hours of report delivery."
+    },
+    {
+      "ref": "5",
+      "heading": "Contact",
+      "body": "Direct all queries to procurement@acme-fictional.example or +91 98765 43210."
+    }
+  ]
 }

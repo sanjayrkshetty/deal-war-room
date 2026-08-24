@@ -1,6 +1,36 @@
 {
-  "opportunity_name": "Globex Corp 24/7 Digital Forensics & Incident Response (DFIR) Retainer & Compromise Assessment",
-  "client_name": "Globex Corporation",
-  "industry": "Global Enterprise Logistics",
-  "rfp_text": "Globex Corporation is soliciting proposals for a 24/7 Digital Forensics and Incident Response (DFIR) Emergency Retainer with a guaranteed 2-hour remote SLA and 4-hour on-site SLA. The scope must include a 100-hour prepaid emergency incident pool, an annual Compromise Assessment (CA) sweep across 500 domain endpoints, and Breach & Attack Simulation (BAS) detection testing against our SIEM and EDR setup."
+  "fixture_id": "globex_dfir_retainer_v2",
+  "title": "Globex Corporation 24/7 DFIR Retainer & Compromise Assessment",
+  "source_type": "synthetic",
+  "agency": "Globex Corporation CISO Office",
+  "expected_mode": "heading",
+  "expected_refs": ["1", "2", "3", "4", "5"],
+  "engineered_traps": ["sub_hour_sla", "unbounded_incident_pool", "onsite_anywhere"],
+  "sections": [
+    {
+      "ref": "1",
+      "heading": "Retainer Overview",
+      "body": "Globex Corporation seeks a 24/7 digital forensics and incident response retainer covering all global business units.\nThe retainer replaces all existing incident response arrangements on day one."
+    },
+    {
+      "ref": "2",
+      "heading": "Response Time Requirements",
+      "body": "Initial remote response within 15 minutes of alert, every day of the year.\nOn-site responders must reach any Globex facility worldwide within 4 hours of declaration."
+    },
+    {
+      "ref": "3",
+      "heading": "Incident Pool And Effort",
+      "body": "The vendor shall handle an unlimited number of P1 incidents per year with no reduction in response quality.\nA compromise assessment covering 5,000 endpoints shall be completed inside the first 60 days."
+    },
+    {
+      "ref": "4",
+      "heading": "Tooling Prerequisites",
+      "body": "The vendor shall deploy incident response agents across all 40,000 workstations during onboarding.\nAgent rollout must not exceed two weeks."
+    },
+    {
+      "ref": "5",
+      "heading": "Commercial Conditions",
+      "body": "Payment is 100 percent upon contract signature.\nQueries to soc@globex-fictional.example or +91 98765 43210."
+    }
+  ]
 }

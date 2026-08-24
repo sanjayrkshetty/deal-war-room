@@ -1,6 +1,36 @@
 {
-  "opportunity_name": "CyberDyne Systems ISO 27001:2022 & PCI-DSS 4.0 Compliance Audit & Governance Framework",
-  "client_name": "CyberDyne Systems",
-  "industry": "Artificial Intelligence & Cloud Robotics",
-  "rfp_text": "CyberDyne Systems requires an end-to-end compliance readiness audit for ISO 27001:2022 Annex A controls and PCI-DSS 4.0 requirement compliance across cloud infrastructure. Scope includes control gap matrix generation, SOC 2 Type II readiness assessment, third-party vendor risk policy drafting, and executive risk briefing presentation to board members."
+  "fixture_id": "cyberdyne_grc_rfp_v2",
+  "title": "CyberDyne Systems Multi-Framework Compliance Program",
+  "source_type": "synthetic",
+  "agency": "CyberDyne Systems Compliance Office",
+  "expected_mode": "heading",
+  "expected_refs": ["1", "2", "3", "4", "5"],
+  "engineered_traps": ["ld_penalties", "compressed_multi_framework_timeline", "liability_asymmetry"],
+  "sections": [
+    {
+      "ref": "1",
+      "heading": "Compliance Mandate",
+      "body": "CyberDyne Systems requires certification readiness across ISO 27001:2022, PCI DSS 4.0 and SOC 2 Type II within a single program."
+    },
+    {
+      "ref": "2",
+      "heading": "Program Timeline",
+      "body": "All three frameworks must reach audit-ready state within 4 months of kickoff.\nExternal certification audits occur in month five."
+    },
+    {
+      "ref": "3",
+      "heading": "Liquidated Damages",
+      "body": "For every week of delay beyond the agreed milestones, the vendor shall pay liquidated damages of 2 percent of total contract value.\nCumulative liability is capped at 100 percent of contract value."
+    },
+    {
+      "ref": "4",
+      "heading": "Liability And Indemnity",
+      "body": "Vendor liability cap is unlimited for data-related claims.\nClient liability is capped at fees paid in the preceding two months."
+    },
+    {
+      "ref": "5",
+      "heading": "Governance",
+      "body": "Weekly steering committee attendance is mandatory with senior leadership presence.\nQueries to grc@cyberdyne-fictional.example."
+    }
+  ]
 }

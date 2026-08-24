@@ -1,0 +1,15 @@
+# DLP entity configuration — loaded by dwr/scrubber.py
+# Regex patterns, case-insensitive matching. Extend here, never in code.
+# This file is public-safe: fictional fixture entities only.
+
+employers:
+  - '\bSISA\s+Information\s+Security\s+Pvt\.?\s+Ltd\.?\b'
+  - '\bSISA\s+Information\s+Security\b'
+  - '\bSISA\s+Technologies\b'
+  - '\bSISA\b'
+
+clients:
+  - '\bAcme\s+Corp(?:oration)?\b'
+  - '\bGlobex\s+Corporation\b'
+  - '\bCyberDyne\s+Systems\b'
+  - '\bNexora\s+Dynamics\b'

@@ -18,9 +18,9 @@ function Lamp({ label, ok }: { label: string; ok: boolean }) {
   );
 }
 
-function Panel({ title, rows }: { title: string; rows: string[] }) {
-  return (
-    <section className="border border-zinc-800 bg-zinc-900/40">
+function Panel({ title, rows, href }: { title: string; rows: string[]; href?: string }) {
+  const body = (
+    <>
       <header className="border-b border-zinc-800 px-4 py-2">
         <h2 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-300">{title}</h2>
       </header>
@@ -31,8 +31,16 @@ function Panel({ title, rows }: { title: string; rows: string[] }) {
           </li>
         ))}
       </ul>
-    </section>
+    </>
   );
+  if (href) {
+    return (
+      <a href={href} className="block border border-zinc-800 bg-zinc-900/40 transition-colors hover:border-emerald-600">
+        {body}
+      </a>
+    );
+  }
+  return <section className="border border-zinc-800 bg-zinc-900/40">{body}</section>;
 }
 
 export default function Home() {
@@ -77,7 +85,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Panel title="Ingest" rows={["paste gate · scrubber audit", "clause segmentation", "awaiting phase 1"]} />
+          <Panel title="Ingest" href="/ingest" rows={["paste gate · scrubber audit", "clause segmentation", "live · phase 1"]} />
           <Panel title="Brief" rows={["bid-fit verdict strip", "traps · matrix · drivers", "awaiting phase 3"]} />
           <Panel title="Clauses" rows={["navigator rail", "citation drawer", "awaiting phase 4"]} />
         </div>

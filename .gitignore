@@ -42,3 +42,4 @@ out/
 # SISA-internal rubric calibration — NEVER commit (public repo)
 rubric.local.yaml
 backend/dwr/rubric.local.yaml
+.env.v1.retired

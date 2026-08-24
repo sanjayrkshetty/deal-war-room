@@ -96,6 +96,17 @@ def db_conn():
         conn.close()
 
 
+@app.get("/")
+def root() -> dict:
+    return {
+        "service": "Deal War Room API",
+        "version": __version__,
+        "health": "/health",
+        "docs": "/docs",
+        "api": "/api/v1",
+    }
+
+
 @app.get("/health")
 def health() -> dict:
     settings = get_settings()

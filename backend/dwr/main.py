@@ -17,14 +17,16 @@ from pydantic import BaseModel
 from dwr import __version__
 from dwr.config import get_settings
 from dwr.db import connect, init_schema
+from dwr.embedder import embedder_ready, try_init_embedder
 from dwr.ingest import (
     DocumentNotFound,
     DuplicateDocument,
     ingest_document,
     reindex_document,
 )
-from dwr.models import DocumentCreate, ScrubPreviewRequest
+from dwr.models import DocumentCreate, ScrubPreviewRequest, SearchRequest
 from dwr.scrubber import scrub_with_audit
+from dwr.search import backfill_embeddings, search as search_clauses
 
 
 @asynccontextmanager
@@ -34,6 +36,7 @@ async def lifespan(_: FastAPI):
         init_schema(conn)
     finally:
         conn.close()
+    try_init_embedder()
     yield
 
 
@@ -75,7 +78,7 @@ def health() -> dict:
         "status": "ok" if db_ok else "degraded",
         "db_ok": db_ok,
         "groq_key_present": bool(settings.groq_api_key),
-        "embedder_loaded": False,
+        "embedder_loaded": embedder_ready(),
     }
 
 
@@ -161,3 +164,30 @@ def reindex(document_id: int, conn=Depends(db_conn)) -> dict:
         return reindex_document(conn, document_id)
     except DocumentNotFound as exc:
         raise HTTPException(status_code=404, detail="document not found") from exc
+
+
+@app.post("/api/v1/search")
+def search_endpoint(payload: SearchRequest, conn=Depends(db_conn)) -> dict:
+    from dwr.embedder import EmbedderUnavailable
+
+    try:
+        results = search_clauses(conn, payload.query, doc_id=payload.doc_id, top_k=payload.top_k)
+    except EmbedderUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {"query": payload.query, "results": results}
+
+
+@app.post("/api/v1/admin/backfill")
+def admin_backfill(payload: BackfillRequest) -> dict:
+    from dwr.embedder import EmbedderUnavailable
+
+    if not embedder_ready():
+        raise HTTPException(status_code=503, detail="embedder not initialized")
+    conn = connect()
+    try:
+        init_schema(conn)
+        return backfill_embeddings(conn, document_id=payload.document_id)
+    except EmbedderUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    finally:
+        conn.close()

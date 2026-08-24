@@ -31,6 +31,13 @@ class Settings(BaseSettings):
     model_synthesis: str = Field(
         default="llama-3.3-70b-versatile", alias="DWR_MODEL_SYNTH"
     )
+    embed_model_name: str = Field(
+        default="sentence-transformers/all-MiniLM-L6-v2", alias="DWR_EMBED_MODEL_NAME"
+    )
+    embed_model_revision: str = Field(
+        default="1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+        alias="DWR_EMBED_MODEL_REVISION",
+    )
 
     model_config = {"populate_by_name": True, "extra": "ignore"}
 

@@ -50,4 +50,20 @@ export const api = {
     ),
   listClauses: (docId: number) =>
     request<{ items: ClauseRow[] }>(`/api/v1/documents/${docId}/clauses`),
+  listDocuments: () =>
+    request<{ items: { id: number; title: string; clause_count: number }[]; total: number }>(
+      "/api/v1/documents",
+    ),
+  search: (payload: { query: string; doc_id?: number | null; top_k?: number }) =>
+    request<{
+      query: string;
+      results: {
+        clause_id: number;
+        doc_id: number;
+        clause_ref: string;
+        heading: string | null;
+        score: number;
+        snippet: string;
+      }[];
+    }>("/api/v1/search", { method: "POST", body: JSON.stringify(payload) }),
 };

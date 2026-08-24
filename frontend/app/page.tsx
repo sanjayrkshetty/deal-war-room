@@ -86,8 +86,13 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <Panel title="Ingest" href="/ingest" rows={["paste gate · scrubber audit", "clause segmentation", "live · phase 1"]} />
-          <Panel title="Brief" rows={["bid-fit verdict strip", "traps · matrix · drivers", "awaiting phase 3"]} />
+          <Panel title="Retrieval" href="/search" rows={["MiniLM semantic search", "score + snippet debug", "live · phase 2"]} />
           <Panel title="Clauses" rows={["navigator rail", "citation drawer", "awaiting phase 4"]} />
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Panel title="Brief" rows={["bid-fit verdict strip", "traps · matrix · drivers", "awaiting phase 3"]} />
+          <Panel title="Pipeline" rows={["triage → risk → synthesis", "citation enforcement", "awaiting phase 3"]} />
+          <Panel title="Deploy" rows={["public showcase", "capped live analysis", "awaiting phase 5"]} />
         </div>
 
         <p className="border border-dashed border-zinc-800 px-4 py-3 text-[11px] text-zinc-600">

@@ -39,7 +39,12 @@ class Settings(BaseSettings):
         alias="DWR_EMBED_MODEL_REVISION",
     )
 
-    model_config = {"populate_by_name": True, "extra": "ignore"}
+    model_config = {
+        "populate_by_name": True,
+        "extra": "ignore",
+        "env_file": (".env", "../.env"),
+        "env_file_encoding": "utf-8",
+    }
 
 
 @lru_cache(maxsize=1)

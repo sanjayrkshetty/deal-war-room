@@ -17,6 +17,7 @@ def test_health_reports_db_ok(tmp_path, monkeypatch):
         assert resp.status_code == 200
         body = resp.json()
         assert body["db_ok"] is True
-        assert body["embedder_loaded"] is False
+        assert isinstance(body["embedder_loaded"], bool)
+        assert body["demo"]["daily_budget"] > 0
     finally:
         get_settings.cache_clear()

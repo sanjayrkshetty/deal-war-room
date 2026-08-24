@@ -67,6 +67,12 @@ class GroqClient:
         return parsed
 
     def _post_with_retry(self, payload: dict, *, stage: str) -> str:
+        from dwr.guardrails import BudgetExceeded, token_budget
+
+        if not token_budget().allow_minimum(1):
+            raise BudgetExceeded(
+                "daily demo cap reached — analysis resumes at 00:00 UTC"
+            )
         last_error = ""
         for attempt in range(MAX_RETRIES):
             try:
@@ -80,8 +86,14 @@ class GroqClient:
                 last_error = f"transport error: {exc}"
             else:
                 if resp.status_code == 200:
+                    body = resp.json()
+                    usage = (body.get("usage") or {}).get("total_tokens")
+                    if usage:
+                        from dwr.guardrails import token_budget
+
+                        token_budget().add(int(usage))
                     try:
-                        return resp.json()["choices"][0]["message"]["content"]
+                        return body["choices"][0]["message"]["content"]
                     except (KeyError, IndexError, TypeError) as exc:
                         raise GroqError(f"{stage}: malformed completion envelope") from exc
                 if resp.status_code in RETRYABLE_STATUS:

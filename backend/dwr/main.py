@@ -10,8 +10,9 @@ import json
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from dwr import __version__
@@ -38,6 +39,7 @@ from dwr.search import backfill_embeddings, search as search_clauses
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    settings = get_settings()
     conn = connect()
     try:
         init_schema(conn)
@@ -49,9 +51,14 @@ async def lifespan(_: FastAPI):
             """
         )
         conn.commit()
+        if settings.seed_fixtures:
+            from dwr.seed import seed_corpus
+
+            seed_corpus(conn)
     finally:
         conn.close()
-    try_init_embedder()
+    if settings.embedder_enabled:
+        try_init_embedder()
     yield
 
 
@@ -68,6 +75,17 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def demo_rate_limit(request, call_next):
+    from dwr.guardrails import general_limiter
+
+    if request.url.path.startswith("/api/"):
+        client_ip = request.client.host if request.client else "unknown"
+        if not general_limiter.hit(client_ip):
+            return JSONResponse(status_code=429, content={"detail": "rate limit exceeded"})
+    return await call_next(request)
 
 
 def db_conn():
@@ -89,11 +107,17 @@ def health() -> dict:
             conn.close()
     except Exception:
         db_ok = False
+    from dwr.guardrails import token_budget
+
     return {
         "status": "ok" if db_ok else "degraded",
         "db_ok": db_ok,
         "groq_key_present": bool(settings.groq_api_key),
         "embedder_loaded": embedder_ready(),
+        "demo": {
+            "embedder_enabled": settings.embedder_enabled,
+            **token_budget().snapshot(),
+        },
     }
 
 
@@ -209,7 +233,17 @@ def admin_backfill(payload: BackfillRequest) -> dict:
 
 
 @app.post("/api/v1/analyses", status_code=202)
-def create_analysis(payload: AnalyzeCreate, conn=Depends(db_conn)) -> dict:
+def create_analysis(payload: AnalyzeCreate, request: Request, conn=Depends(db_conn)) -> dict:
+    from dwr.guardrails import MIN_ANALYSIS_TOKENS, analysis_limiter, token_budget
+
+    client_ip = request.client.host if request.client else "unknown"
+    if not analysis_limiter.hit(client_ip):
+        raise HTTPException(status_code=429, detail="analysis rate limit exceeded (per hour)")
+    if not token_budget().allow_minimum(MIN_ANALYSIS_TOKENS):
+        raise HTTPException(
+            status_code=503,
+            detail="daily demo cap reached — analysis resumes at 00:00 UTC",
+        )
     exists = conn.execute(
         "SELECT 1 FROM documents WHERE id = ?", (payload.document_id,)
     ).fetchone()

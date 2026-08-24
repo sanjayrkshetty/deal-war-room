@@ -88,7 +88,7 @@ def test_audit_counts_substitutions_not_categories():
 
 
 def test_report_never_contains_matched_strings():
-    secret = "agent@sisainfosec.com"
+    secret = "agent@vendor-internal.example"
     audit = scrub_with_audit(f"Ping {secret} about INR 9,99,999.")
     blob = str(audit["report"])
     assert secret not in blob

@@ -1,0 +1,14 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+# Demo-deploy requirements: deliberately WITHOUT torch/sentence-transformers.
+# The embedder lazy-imports them; DWR_EMBEDDER_ENABLED=false keeps /search
+# degrading to a clean 503 instead of a multi-GB CUDA install.
+# Local dev manages the full stack via pyproject + uv.
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+pydantic==2.13.4
+pydantic-settings==2.15.0
+python-dotenv==1.2.3
+pyyaml==6.0.3
+numpy==2.4.6
+rapidfuzz==3.14.5
+httpx==0.28.1

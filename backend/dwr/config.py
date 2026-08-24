@@ -38,6 +38,9 @@ class Settings(BaseSettings):
         default="1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
         alias="DWR_EMBED_MODEL_REVISION",
     )
+    embedder_enabled: bool = Field(default=True, alias="DWR_EMBEDDER_ENABLED")
+    seed_fixtures: bool = Field(default=False, alias="DWR_SEED_FIXTURES")
+    daily_token_budget: int = Field(default=400000, alias="DWR_DAILY_TOKEN_BUDGET")
 
     model_config = {
         "populate_by_name": True,

@@ -1,0 +1,82 @@
+# Deal War Room — bid-fit rubric v0 (SEED)
+#
+# PUBLIC-SAFE FILE: committable to the public repo. Never place SISA-internal
+# rates, SLA floors, staffing counts, or client identifiers here.
+# Local overrides live in rubric.local.yaml (gitignored) using identical keys;
+# local values always win over the values in this file.
+#
+# confidence legend:
+#   high   = explicit owner statement
+#   medium = derived from owner statement + standard practice
+#   low    = public methodology prior, tune after real runs
+
+version: 0
+updated: 2026-08-24
+
+score_weights:
+  sla_feasibility: 20
+  scope_fit: 25
+  capability_coverage: 20
+  effort_risk: 20
+  relationship_advantage: 15
+
+no_go_signals:
+  - id: fraud_investigation_mandate
+    desc: Tender seeks fraud/financial-crime investigation outside cyber forensic remit
+    confidence: high
+    source: owner
+  - id: physical_security_scope
+    desc: Physical security / guarding / hardware-installation scope
+    confidence: high
+    source: owner
+
+conditional_signals:
+  - id: sla_tighter_than_floor
+    desc: Response/containment SLA tighter than delivery floor (floor set in local override)
+    confidence: low
+  - id: unknown_ca_throughput
+    desc: Compromise-assessment scale large relative to assumed throughput prior
+    confidence: low
+  - id: multi_year_exclusive_lockin
+    desc: Exclusivity or multi-year lock-in without termination relief
+    confidence: low
+
+service_lines:
+  dfir:
+    owner_expertise: true
+    capabilities:
+      ir_on_demand: { strength: strong, confidence: medium }
+      detailed_forensic_investigation: { strength: strong, confidence: medium }
+      bas: { strength: strong, confidence: high, source: owner }   # confirmed in-house
+      compromise_assessment: { strength: offered, throughput_unknown: true, confidence: low }
+    effort_priors:
+      # person-hours per ransomware-style incident involving ~10 systems
+      incident_ir_10_systems_ph: { default: 50, confidence: low }
+      ca_endpoints_per_person_day: { default: null, confidence: low, note: owner unsure — leave null until calibrated }
+  vapt:
+    owner_expertise: false
+    priors_source: PTES/OWASP conventions
+    capabilities:
+      web_app: { strength: strong, confidence: low }
+      api: { strength: strong, confidence: low }
+      network_infra: { strength: strong, confidence: low }
+      red_team: { strength: strong, confidence: low }
+  grc:
+    owner_expertise: false
+    priors_source: ISO 27001:2022 / PCI DSS v4.0 audit practice
+    capabilities:
+      iso27001_gap: { strength: strong, confidence: low }
+      pci_dss_qsa: { strength: strong, confidence: low, note: public SISA marketing claims QSA/PFI credentials }
+      soc2_readiness: { strength: partial, confidence: low }
+  soc:
+    owner_expertise: false
+    priors_source: SIEM sizing conventions (EPS/GB-day)
+    capabilities:
+      siem_onboarding: { strength: partial, confidence: low }
+      edr_deployment: { strength: partial, confidence: low }
+
+question_bank_triggers:
+  - trigger: sla_defined_without_staffing_basis
+    question: How is the required response time staffed across shifts/geographies?
+  - trigger: unlimited_support_language
+    question: What bounds "support" — define max concurrent incidents and hours draw-down.

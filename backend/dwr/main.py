@@ -234,6 +234,22 @@ def get_analysis(analysis_id: int, conn=Depends(db_conn)) -> dict:
     return dict(row)
 
 
+@app.get("/api/v1/clauses/{clause_id}")
+def get_clause(clause_id: int, conn=Depends(db_conn)) -> dict:
+    row = conn.execute(
+        """
+        SELECT c.id, c.doc_id, c.clause_ref, c.heading, c.body, c.ordinal,
+               d.title AS document_title
+        FROM clauses c JOIN documents d ON d.id = c.doc_id
+        WHERE c.id = ?
+        """,
+        (clause_id,),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="clause not found")
+    return dict(row)
+
+
 @app.get("/api/v1/analyses/{analysis_id}/brief")
 def get_brief(analysis_id: int, conn=Depends(db_conn)) -> dict:
     import json as _json
@@ -255,6 +271,16 @@ def get_brief(analysis_id: int, conn=Depends(db_conn)) -> dict:
         return {"status": analysis["status"], "error": analysis["error"], "brief": None}
     brief = dict(row)
     brief["payload"] = _json.loads(brief.pop("payload_json"))
+    brief["citations"] = [
+        dict(c)
+        for c in conn.execute(
+            """
+            SELECT claim_path, clause_id, quoted_span, span_start, span_end
+            FROM citations WHERE brief_id = ?
+            """,
+            (row["id"],),
+        ).fetchall()
+    ]
     return {"status": "done", "error": None, "brief": brief}
 
 

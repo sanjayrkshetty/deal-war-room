@@ -90,7 +90,7 @@ export default function Home() {
           <Panel title="Clauses" rows={["navigator rail", "citation drawer", "awaiting phase 4"]} />
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Panel title="Brief" rows={["bid-fit verdict strip", "traps · matrix · drivers", "cli · phase 3 live"]} />
+          <Panel title="Brief" href="/brief" rows={["bid-fit verdict strip", "traps · matrix · drivers", "live · phase 4"]} />
           <Panel title="Pipeline" rows={["triage → risk → synthesis", "citation enforcement", "live · phase 3"]} />
           <Panel title="Deploy" rows={["public showcase", "capped live analysis", "awaiting phase 5"]} />
         </div>

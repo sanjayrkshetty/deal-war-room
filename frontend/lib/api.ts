@@ -18,6 +18,52 @@ export type ClauseRow = {
   segmentation_mode: string;
 };
 
+export type Brief = {
+  id: number;
+  analysis_id: number;
+  doc_id: number;
+  bid_fit_score: number | null;
+  recommendation: string;
+  confidence: string | null;
+  uncited_claims_count: number;
+  dropped_clauses_count: number;
+  created_at: string;
+  payload: {
+    verdict: {
+      bid_fit_score: number;
+      recommendation: "GO" | "CONDITIONAL" | "NO_GO";
+      rationale: string;
+      confidence: string;
+      no_go_signal_ids?: string[];
+      conditional_signal_ids?: string[];
+    };
+    meta: {
+      uncited_claims_count: number;
+      dropped_clauses_count: number;
+      pipeline_version: string;
+      rubric_version: string;
+      model_config: Record<string, string>;
+    };
+  } & Record<string, unknown>;
+  citations: {
+    claim_path: string;
+    clause_id: number;
+    quoted_span: string;
+    span_start: number | null;
+    span_end: number | null;
+  }[];
+};
+
+export type ClauseFull = {
+  id: number;
+  doc_id: number;
+  clause_ref: string;
+  heading: string | null;
+  body: string;
+  ordinal: number;
+  document_title: string;
+};
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     headers: { "Content-Type": "application/json" },
@@ -66,4 +112,25 @@ export const api = {
         snippet: string;
       }[];
     }>("/api/v1/search", { method: "POST", body: JSON.stringify(payload) }),
+  listBriefs: (docId?: number) =>
+    request<{ items: { id: number; analysis_id: number; doc_id: number; bid_fit_score: number | null; recommendation: string; created_at: string }[] }>(
+      `/api/v1/briefs${docId != null ? `?doc_id=${docId}` : ""}`,
+    ),
+  getBrief: (analysisId: number) =>
+    request<{ status: string; error: string | null; brief: Brief | null }>(
+      `/api/v1/analyses/${analysisId}/brief`,
+    ),
+  startAnalysis: (docId: number) =>
+    request<{ analysis_id: number; status: string }>("/api/v1/analyses", {
+      method: "POST",
+      body: JSON.stringify({ document_id: docId }),
+    }),
+  getAnalysis: (analysisId: number) =>
+    request<{ id: number; status: string; stage: string | null; error: string | null }>(
+      `/api/v1/analyses/${analysisId}`,
+    ),
+  getClauses: (docId: number) =>
+    request<{ items: ClauseRow[] }>(`/api/v1/documents/${docId}/clauses`),
+  getClause: (clauseId: number) =>
+    request<ClauseFull>(`/api/v1/clauses/${clauseId}`),
 };

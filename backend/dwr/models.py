@@ -38,3 +38,7 @@ class SearchRequest(BaseModel):
     query: str = Field(min_length=1, max_length=2000)
     doc_id: int | None = None
     top_k: int = Field(default=8, ge=1, le=50)
+
+
+class AnalyzeCreate(BaseModel):
+    document_id: int

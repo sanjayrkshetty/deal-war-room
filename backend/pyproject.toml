@@ -11,6 +11,7 @@ dependencies = [
     "pyyaml>=6.0",
     "numpy>=1.26",
     "sentence-transformers>=3.0",
+    "rapidfuzz>=3.9",
 ]
 
 [tool.uv.sources]
@@ -36,4 +37,7 @@ packages = ["dwr"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+addopts = "-q -m 'not live'"
+markers = [
+    "live: hits real Groq API; requires GROQ_API_KEY (deselected by default)",
+]

@@ -23,22 +23,27 @@ score_weights:
 no_go_signals:
   - id: fraud_investigation_mandate
     desc: Tender seeks fraud/financial-crime investigation outside cyber forensic remit
+    match: '(?i)\bfraud (?:investigation|examination|forensics)\b'
     confidence: high
     source: owner
   - id: physical_security_scope
     desc: Physical security / guarding / hardware-installation scope
+    match: '(?i)\b(physical security|security guards?|cctv installation)\b'
     confidence: high
     source: owner
 
 conditional_signals:
   - id: sla_tighter_than_floor
     desc: Response/containment SLA tighter than delivery floor (floor set in local override)
+    match: '(?i)\b(?:within\s+\d{1,2}\s+minutes|15[- ]minutes?|30[- ]minutes? response)\b'
     confidence: low
   - id: unknown_ca_throughput
     desc: Compromise-assessment scale large relative to assumed throughput prior
+    match: '(?i)\bcompromise assessment\b.{0,120}\b\d{3,}\s+endpoints\b'
     confidence: low
   - id: multi_year_exclusive_lockin
     desc: Exclusivity or multi-year lock-in without termination relief
+    match: '(?i)\b(exclusiv\w+|locked[- ]in|multi[- ]year commitment)\b'
     confidence: low
 
 service_lines:

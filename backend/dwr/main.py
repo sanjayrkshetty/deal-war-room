@@ -24,7 +24,14 @@ from dwr.ingest import (
     ingest_document,
     reindex_document,
 )
-from dwr.models import DocumentCreate, ScrubPreviewRequest, SearchRequest
+from dwr.models import (
+    AnalyzeCreate,
+    BackfillRequest,
+    DocumentCreate,
+    ScrubPreviewRequest,
+    SearchRequest,
+)
+from dwr.pipeline import PipelineError, launch_background, start_analysis
 from dwr.scrubber import scrub_with_audit
 from dwr.search import backfill_embeddings, search as search_clauses
 
@@ -34,6 +41,14 @@ async def lifespan(_: FastAPI):
     conn = connect()
     try:
         init_schema(conn)
+        conn.execute(
+            """
+            UPDATE analyses SET status='failed', error='interrupted by restart',
+                   finished_at=CURRENT_TIMESTAMP
+            WHERE status IN ('queued','running')
+            """
+        )
+        conn.commit()
     finally:
         conn.close()
     try_init_embedder()
@@ -191,3 +206,68 @@ def admin_backfill(payload: BackfillRequest) -> dict:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     finally:
         conn.close()
+
+
+@app.post("/api/v1/analyses", status_code=202)
+def create_analysis(payload: AnalyzeCreate, conn=Depends(db_conn)) -> dict:
+    exists = conn.execute(
+        "SELECT 1 FROM documents WHERE id = ?", (payload.document_id,)
+    ).fetchone()
+    if not exists:
+        raise HTTPException(status_code=404, detail="document not found")
+    try:
+        analysis_id = start_analysis(conn, payload.document_id)
+    except PipelineError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    launch_background(payload.document_id, analysis_id)
+    return {"analysis_id": analysis_id, "status": "queued"}
+
+
+@app.get("/api/v1/analyses/{analysis_id}")
+def get_analysis(analysis_id: int, conn=Depends(db_conn)) -> dict:
+    row = conn.execute(
+        "SELECT id, doc_id, status, stage, error, started_at, finished_at FROM analyses WHERE id = ?",
+        (analysis_id,),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="analysis not found")
+    return dict(row)
+
+
+@app.get("/api/v1/analyses/{analysis_id}/brief")
+def get_brief(analysis_id: int, conn=Depends(db_conn)) -> dict:
+    import json as _json
+
+    row = conn.execute(
+        """
+        SELECT b.*, a.status AS analysis_status, a.error AS analysis_error
+        FROM briefs b JOIN analyses a ON a.id = b.analysis_id
+        WHERE b.analysis_id = ?
+        """,
+        (analysis_id,),
+    ).fetchone()
+    if not row:
+        analysis = conn.execute(
+            "SELECT status, error FROM analyses WHERE id = ?", (analysis_id,)
+        ).fetchone()
+        if not analysis:
+            raise HTTPException(status_code=404, detail="analysis not found")
+        return {"status": analysis["status"], "error": analysis["error"], "brief": None}
+    brief = dict(row)
+    brief["payload"] = _json.loads(brief.pop("payload_json"))
+    return {"status": "done", "error": None, "brief": brief}
+
+
+@app.get("/api/v1/briefs")
+def list_briefs(conn=Depends(db_conn), doc_id: int | None = Query(default=None)) -> dict:
+    sql = """
+        SELECT b.id, b.analysis_id, a.doc_id, b.bid_fit_score, b.recommendation,
+               b.confidence, b.uncited_claims_count, b.dropped_clauses_count, b.created_at
+        FROM briefs b JOIN analyses a ON a.id = b.analysis_id
+    """
+    params: tuple = ()
+    if doc_id is not None:
+        sql += " WHERE a.doc_id = ?"
+        params = (doc_id,)
+    rows = conn.execute(sql + " ORDER BY b.id DESC", params).fetchall()
+    return {"items": [dict(row) for row in rows]}

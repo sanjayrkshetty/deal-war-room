@@ -27,9 +27,9 @@ def _default_db_path() -> Path:
 class Settings(BaseSettings):
     groq_api_key: str | None = Field(default=None, alias="GROQ_API_KEY")
     db_path: Path = Field(default_factory=_default_db_path)
-    model_triage: str = Field(default="llama-3.1-8b-instant", alias="DWR_MODEL_TRIAGE")
+    model_triage: str = Field(default="openai/gpt-oss-20b", alias="DWR_MODEL_TRIAGE")
     model_synthesis: str = Field(
-        default="llama-3.3-70b-versatile", alias="DWR_MODEL_SYNTH"
+        default="openai/gpt-oss-120b", alias="DWR_MODEL_SYNTH"
     )
     embed_model_name: str = Field(
         default="sentence-transformers/all-MiniLM-L6-v2", alias="DWR_EMBED_MODEL_NAME"
